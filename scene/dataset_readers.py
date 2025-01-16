@@ -45,6 +45,7 @@ class CameraInfo(NamedTuple):
     height: int
     mask: np.array
     bounds: np.array
+    rgb_path: str
 
 class SceneInfo(NamedTuple):
     point_cloud: BasicPointCloud
@@ -110,7 +111,7 @@ def readColmapCameras2(cam_extrinsics, cam_intrinsics, images_folder):
         image = Image.open(image_path)
 
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, image=image,
-                              image_path=image_path, image_name=image_name, width=width, height=height)
+                              image_path=image_path, image_name=image_name, width=width, height=height, rgb_path = '')
         cam_infos.append(cam_info)
 
         break
