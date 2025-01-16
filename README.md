@@ -1,4 +1,4 @@
-# FSGS: Real-Time Few-Shot View Synthesis using Gaussian Splatting
+# ToBeFixed
 
 
 
