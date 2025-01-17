@@ -135,12 +135,12 @@ def training(dataset, opt, pipe, args):
         midas_depth_skip = midas_depth.reshape(-1, 1) * skip_mask
         
 
-        depth_loss = l2_loss(rendered_depth_unskip,midas_depth_unskip)
+        depth_loss = l1_loss(rendered_depth_unskip,midas_depth_unskip)
         depth_loss_2 = min(
                             (1 - pearson_corrcoef( - midas_depth_skip, rendered_depth_skip)),
                             (1 - pearson_corrcoef(1 / (midas_depth_skip + 200.), rendered_depth_skip))
                         )
-        loss += (depth_loss * 0.1 + depth_loss_2*0.1)
+        # loss += (depth_loss * 0.1 + depth_loss_2*0.1)
         
         
 

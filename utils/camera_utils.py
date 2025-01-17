@@ -24,7 +24,32 @@ from utils.depth_utils import estimate_depth, midas_depth
 import math
 
 WARNED = False
+import random
+def plot_depth(depth_map, save_path, title="Depth Map"):
+    """
+    Plot the depth map.
+    
+    Arguments:
+    - depth_map: np.array or torch.Tensor, 2D depth map.
+    - title: str, title of the plot.
+    """
+    if isinstance(depth_map, torch.Tensor):
+        depth_map = depth_map.cpu().numpy()
 
+    # Plot the depth map
+    plt.figure(figsize=(8, 6))
+    plt.imshow(depth_map, cmap="viridis")
+    plt.colorbar(label="Depth")
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+    index = random.randint(1, 100)
+    if (title == "Final Depth Map"):
+        plt.savefig(f"{save_path}/final_depth_map{index}.png")
+    elif (title == "Point Cloud Depth Map"):
+        plt.savefig(f"{save_path}/point_cloud_depth_map{index}.png")
+    else:
+        plt.savefig(f"{save_path}/before_depth_map{index}.png")
 
 
 
@@ -249,12 +274,9 @@ def loadCam2(args, id, cam_info, resolution_scale, n_views, pcd):
     depth_mde = np.zeros(shape)
     depth_weight = np.zeros(shape)
     mask = np.zeros(shape)
-    # print(f"\n Mask shape {mask.shape}\n ")
     resolution = 8
 
-    # print('Train\n')
     ply_path = os.path.join(args.source_path, str(n_views) + "_views/dense/fused.ply")
-    # pcd = fetchPly(ply_path)
     
     depth_path = cam_info.rgb_path
 
@@ -276,17 +298,17 @@ def loadCam2(args, id, cam_info, resolution_scale, n_views, pcd):
     depth_weight = depth_weight/depth_weight.max()
     
 
-    # print(f'{cam_info.image_name}\n\n')
     depth_mde = midas_depth(depth_path)
+    plot_depth(depth_mde,args.model_path,"Before Depth Map" )
     print(f'\nHUHUHU {depth_mde.shape}\n')
     patch_size = int(math.sqrt(orig_w*orig_h/108))
-    # print(f"PATCH SICE {patch_size}\n")
     refined_depth, losses, processed_mask = optimize_depth_batch(depth_mde, depth_pcd, depth_pcd > 0.0, depth_weight, patch_size)
-    # refined_depth_global, global_loss = optimize_depth_global(depth_mde, depth_pcd, depth_pcd >0.0,depth_weight)
-
 
 
     depth = refined_depth * processed_mask
+    plot_depth(depth,args.model_path,"Final Depth Map" )
+    plot_depth(depth_pcd,args.model_path,"Point Cloud Depth Map" )
+
     plt.imshow(depth)
 
     if args.resolution in [1, 2, 4, 8]:
