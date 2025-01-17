@@ -296,7 +296,11 @@ def loadCam2(args, id, cam_info, resolution_scale, n_views, pcd):
     depth_pcd[np.round(cam_coord[1]).astype(np.int32).clip(0,height//resolution-1), np.round(cam_coord[0]).astype(np.int32).clip(0,width//resolution-1)] = pts_depths
     depth_weight[np.round(cam_coord[1]).astype(np.int32).clip(0,height//resolution-1), np.round(cam_coord[0]).astype(np.int32).clip(0,width//resolution-1)] = 1/pcd.errors[valid_idx] if pcd.errors is not None else 1
     depth_weight = depth_weight/depth_weight.max()
+    print(f"AAAAA {np.max(valid_idx)}\n")
     
+    for idx in valid_idx:
+        x = cam_coord[0, idx]
+        y = cam_coord[1, idx]
 
     depth_mde = midas_depth(depth_path)
     plot_depth(depth_mde,args.model_path,"Before Depth Map" )
